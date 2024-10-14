@@ -1,17 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
+// src/components/NavbarComp.jsx
 import React, { useState, useEffect } from "react";
 import { HiMenu } from "react-icons/hi";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const NavbarComp = ({ toggleSidebar, setActiveTable }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const NavbarComp = ({
+  toggleSidebar,
+  setActiveTable,
+  isNavbarDropdownOpen,
+  setIsNavbarDropdownOpen,
+  setIsSidebarOpen, // Receive setter to close Sidebar from Navbar
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeLabel, setActiveLabel] = useState("Nutrition"); // New state for active label
   const location = useLocation();
   const navigate = useNavigate();
 
   const routes = [
-    { path: "proximatedfiber", label: "Proximated Fiber" },
+    { path: "proximatedfiber", label: "Proximate Fiber" },
     { path: "watersoluble", label: "Water Soluble" },
     { path: "fatsoluble", label: "Fat Soluble" },
     { path: "carotenoids", label: "Carotenoids" },
@@ -29,12 +36,22 @@ const NavbarComp = ({ toggleSidebar, setActiveTable }) => {
     const currentPath = location.pathname.replace("/", "");
     const foundRoute = routes.find((route) => route.path === currentPath);
     setActiveTable(foundRoute ? foundRoute.path : "proximatedfiber");
+    setActiveLabel(foundRoute ? foundRoute.label : "Nutrition"); // Update active label
   }, [location.pathname, setActiveTable]);
 
-  const handleLinkClick = (path) => {
+  const handleLinkClick = (path, label) => {
     setActiveTable(path);
+    setActiveLabel(label); // Update active label on link click
     navigate(`/${path}`);
-    setDropdownOpen(false);
+    setIsNavbarDropdownOpen(false); // Close Navbar dropdown when a link is clicked
+  };
+
+  const handleDropdownToggle = () => {
+    setDropdownOpen(!dropdownOpen);
+    setIsNavbarDropdownOpen(!isNavbarDropdownOpen);
+    if (!isNavbarDropdownOpen) {
+      setIsSidebarOpen(false); // Close Sidebar when Navbar dropdown opens
+    }
   };
 
   return (
@@ -46,8 +63,8 @@ const NavbarComp = ({ toggleSidebar, setActiveTable }) => {
         >
           <HiMenu className="w-6 h-6" />
         </button>
-        <span className="self-center whitespace-nowrap text-xl font-semibold ml-4">
-          Nutrition
+        <span className="self-center whitespace-normal text-sm md:text[16px] font-semibold ml-4 max-w-[150px] overflow-hidden text-ellipsis">
+          {activeLabel} {/* Display the active label here */}
         </span>
       </div>
 
@@ -61,7 +78,7 @@ const NavbarComp = ({ toggleSidebar, setActiveTable }) => {
 
       <div className="relative flex">
         <button
-          onClick={() => setDropdownOpen(!dropdownOpen)}
+          onClick={handleDropdownToggle} // Toggle dropdown and close Sidebar
           className="inline-flex items-center justify-center p-2 rounded-md text-slate-600 hover:text-blue-300 hover:bg-gray-700 focus:outline-none"
         >
           <svg
@@ -79,12 +96,12 @@ const NavbarComp = ({ toggleSidebar, setActiveTable }) => {
           </svg>
         </button>
 
-        {dropdownOpen && (
+        {isNavbarDropdownOpen && (
           <div className="absolute right-0 mt-14 w-48 bg-slate-200 rounded-md shadow-lg cursor-pointer overflow-y-auto max-h-80 z-50">
             {routes.map(({ path, label }) => (
               <a
                 key={path}
-                onClick={() => handleLinkClick(path)}
+                onClick={() => handleLinkClick(path, label)} // Pass label to handleLinkClick
                 className={`text-slate-600 hover:text-blue-300 block px-3 py-2 rounded-md text-base font-medium whitespace-normal ${
                   location.pathname === `/${path}`
                     ? "underline text-blue-300"

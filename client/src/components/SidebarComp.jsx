@@ -8,6 +8,7 @@ const SidebarComp = ({
   setSelectedSidebarItem,
   closeSidebar,
   tablemenudetails,
+  setIsNavbarDropdownOpen,
 }) => {
   const [openCollapse, setOpenCollapse] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -16,7 +17,9 @@ const SidebarComp = ({
     setOpenCollapse(openCollapse === collapseTitle ? null : collapseTitle);
     setSelectedItem(submenuKey);
     setSelectedSidebarItem(itemData); // Update the selected item
+
     closeSidebar(); // Close sidebar after selecting an item for mobile view
+    setIsNavbarDropdownOpen(false); // Close Navbar dropdown when Sidebar is used
   };
 
   return (

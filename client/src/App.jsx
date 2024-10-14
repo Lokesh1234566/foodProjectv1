@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -27,14 +27,20 @@ import FattyAcidOilsFats from "./pages/FattyAcidOilsFats";
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isNavbarDropdownOpen, setIsNavbarDropdownOpen] = useState(false); // New state for Navbar dropdown
   const [selectedItem, setSelectedItem] = useState(null);
   const navigate = useNavigate();
   const [activeTable, setActiveTable] = useState("home");
   const [clickedWaterSoluble, setClickedWaterSoluble] = useState(null);
   const [clickedProximateFiber, setClickedProximateFiber] = useState(null);
+  const [clickedCarotenoids, setClickedCarotenoids] = useState(null);
+  const [clickedMineralsElem, setClickedMineralsElem] = useState(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+    if (!isSidebarOpen) {
+      setIsNavbarDropdownOpen(false); // Close Navbar dropdown when Sidebar opens
+    }
   };
 
   const handleSidebarItemClick = (itemData) => {
@@ -43,7 +49,7 @@ const App = () => {
     setIsSidebarOpen(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (activeTable === "home") {
       navigate("/");
     }
@@ -54,6 +60,9 @@ const App = () => {
       <NavbarComp
         toggleSidebar={toggleSidebar}
         setActiveTable={setActiveTable}
+        isNavbarDropdownOpen={isNavbarDropdownOpen}
+        setIsNavbarDropdownOpen={setIsNavbarDropdownOpen}
+        setIsSidebarOpen={setIsSidebarOpen} // Pass setter to close Sidebar from Navbar
       />
       <div className="flex flex-1">
         {/* Sidebar */}
@@ -67,6 +76,7 @@ const App = () => {
             setSelectedSidebarItem={handleSidebarItemClick}
             closeSidebar={() => setIsSidebarOpen(false)}
             tablemenudetails={tablemenudetails}
+            setIsNavbarDropdownOpen={setIsNavbarDropdownOpen} // Pass setter to close Navbar dropdown from Sidebar
           />
         </div>
 
@@ -101,8 +111,20 @@ const App = () => {
               }
             />
             <Route path="/fatsoluble" element={<FatSoluble />} />
-            <Route path="/carotenoids" element={<Carotenoids />} />
-            <Route path="/mineralselements" element={<MineralsElements />} />
+            <Route
+              path="/carotenoids"
+              element={
+                <Carotenoids setClickedCarotenoids={setClickedCarotenoids} />
+              }
+            />
+            <Route
+              path="/mineralselements"
+              element={
+                <MineralsElements
+                  setClickedMineralsElem={setClickedMineralsElem}
+                />
+              }
+            />
             <Route path="/starch" element={<Starch />} />
             <Route path="/fattyacid" element={<FattyAcid />} />
             <Route path="/aminoacid" element={<AminoAcid />} />
@@ -116,6 +138,8 @@ const App = () => {
       <FooterComp
         clickedWaterSoluble={clickedWaterSoluble}
         clickedProximateFiber={clickedProximateFiber}
+        clickedCarotenoids={clickedCarotenoids}
+        clickedMineralsElem={clickedMineralsElem}
       />
     </div>
   );
